@@ -3,6 +3,7 @@ node_modules/
 dist/
 .prisma/
 *.tmp
+*.old
 *.log
 .DS_Store
 Thumbs.db
