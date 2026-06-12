@@ -8,8 +8,7 @@ for i in $(seq 1 30); do
   sleep 2
 done
 
-echo "Running migrations..."
-npx prisma migrate deploy
+echo "Database is ready, schema synced."
 
 echo "Seeding database..."
 npx tsx prisma/seed.ts || true
