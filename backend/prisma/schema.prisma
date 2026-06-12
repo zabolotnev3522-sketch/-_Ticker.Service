@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CLIENT
+  MANAGER
+  ENGINEER
+  ADMIN
+}
+
+enum TicketStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(CLIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignedTickets Ticket[] @relation("AssignedEngineer")
+  createdTickets  Ticket[] @relation("CreatedBy")
+  comments        Comment[]
+  statusHistories StatusHistory[]
+}
+
+model Ticket {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String
+  status      TicketStatus @default(NEW)
+  priority    String       @default("medium")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  clientId    Int
+  client      User   @relation("CreatedBy", fields: [clientId], references: [id])
+
+  engineerId  Int?
+  engineer    User?  @relation("AssignedEngineer", fields: [engineerId], references: [id])
+
+  comments    Comment[]
+  statusHistory StatusHistory[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+
+  ticketId  Int
+  ticket    Ticket @relation(fields: [ticketId], references: [id])
+
+  userId    Int
+  user      User @relation(fields: [userId], references: [id])
+}
+
+model StatusHistory {
+  id        Int          @id @default(autoincrement())
+  oldStatus TicketStatus?
+  newStatus TicketStatus
+  note      String?
+  createdAt DateTime     @default(now())
+
+  ticketId  Int
+  ticket    Ticket @relation(fields: [ticketId], references: [id])
+
+  userId    Int
+  user      User @relation(fields: [userId], references: [id])
+}
