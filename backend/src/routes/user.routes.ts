@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { userService } from '../services/user.service';
 import { authenticate, authorize } from '../middleware/auth';
+import { AppError } from '../lib/errors';
 
 export const userRouter = Router();
 
